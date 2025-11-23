@@ -116,7 +116,8 @@ def get_3D_index (x, y, z, dx,dy,dz,x_min,y_min,z_min, n_xyz):
     
     return jx, jy, jz
  
-def get_1D_index(jx, jy, jz, n_xyz):    
+def get_1D_index(jx, jy, jz, n_xyz):  
+      
     return jx + jy * n_xyz + jz * n_xyz**2
 
 def create3Dindex(X,Y,Z, x_min, y_min, z_min, dx, dy, dz, bx, by, bz, n_xyz):
@@ -153,25 +154,6 @@ def naive_search (X, Y, Z, x, y, z, k):
     
     return Xn, Yn, Zn
 
-
-k = 3
-def build_kdtree(X, Y, Z, depth=0):
-    n = len(X)
-
-    if n <= 0:
-        return None
-
-    axis = depth % k
-
-    sorted_points = sorted (X, key=lambda point: point[axis])
-
-    return {
-        'point': sorted_points[n // 2],
-        'left': build_kdtree(sorted_points[:n // 2], depth + 1),
-        'right': build_kdtree(sorted_points[n // 2 + 1:], depth + 1)
-    }
-    
-    
     
 def compute_density(X, Y, Z, knn_method):
     distances = []
@@ -221,8 +203,6 @@ jx, jy, jz = get_3D_index ((( dx+x_min+x_min)/2), ((dy+y_min+y_min)/2), ((dz+z_m
 
 index = get_1D_index(jx, jy, jz, n_xyz)
 
-tree = build_kdtree(X,Y, Z)
-print(tree)
 
 #dens = compute_density(X, Y, Z, naive_search) #takes about 15 mins
 
@@ -248,11 +228,29 @@ class KDTree:
     def _build_tree(self, idxs, depth):
         pass
 
+def return1 ():
+    return 1
 
 
-
-
-
+k= 3
+def create_kd_tree(points, depth=0):
+    n = len(points)
+    # Base Case
+    if n == 0:
+        return None 
+    # Select the axis based on the current depth
+    axis = depth % len(points[0])
+    # Sort the points based on the axis
+    points.sort(key=lambda point: point[axis])
+    # Find the median point
+    mid = n//2
+    # Create the node
+    node = Node(points[mid])
+    # Recursively create the left and right subtrees
+    node.left = create_kd_tree(points[:mid], depth+1)
+    node.right = create_kd_tree(points[mid+1:], depth+1)
+    # Return the node
+    return node
 
 
 

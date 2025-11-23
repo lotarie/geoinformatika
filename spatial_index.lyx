@@ -1,0 +1,668 @@
+#LyX 2.4 created this file. For more info see https://www.lyx.org/
+\lyxformat 620
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\use_default_options true
+\maintain_unincluded_children no
+\language czech
+\language_package default
+\inputencoding utf8
+\fontencoding auto
+\font_roman "ae" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family rmdefault
+\use_non_tex_fonts false
+\font_sc false
+\font_roman_osf false
+\font_sans_osf false
+\font_typewriter_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\float_placement class
+\float_alignment class
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_formatted_ref 0
+\use_minted 0
+\use_lineno 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 2cm
+\topmargin 2.5cm
+\rightmargin 2cm
+\bottommargin 2.5cm
+\headheight 2cm
+\headsep 2cm
+\footskip 2cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation skip
+\defskip halfline
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tablestyle default
+\tracking_changes false
+\output_changes false
+\change_bars false
+\postpone_fragile_content true
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\docbook_table_output 0
+\docbook_mathml_prefix 1
+\end_header
+
+\begin_body
+
+\begin_layout Section*
+Prostorová indexace s využitím gridu
+\end_layout
+
+\begin_layout Subsection*
+Návod na cvičení,
+ Geoinformatika.
+\end_layout
+
+\begin_layout Standard
+Na vstupu je mračno bodů 
+\begin_inset Formula $P=\{p_{i}\}_{i=1}^{n}$
+\end_inset
+
+,
+ kde 
+\begin_inset Formula $p_{i}=[x_{i},y_{i},z_{i}]$
+\end_inset
+
+.
+ Nad mračnem zkonstruujeme pomocnou indexační strukturu reprezentovanou 3D gridem.
+ Grid je tvořen jednotlivými buňkami (voxely),
+ celkový počet buněk je funkcí velikosti datasetu 
+\begin_inset Formula $n$
+\end_inset
+
+ a prostorové dimenze,
+ 
+\begin_inset Formula $k=3$
+\end_inset
+
+ volíme ho jako
+\begin_inset Formula 
+\[
+n_{b}=n^{1/k}=n^{1/3}.
+\]
+
+\end_inset
+
+Počet buněk 
+\begin_inset Formula $n_{r}$
+\end_inset
+
+ resp.
+ 
+\begin_inset Formula $n_{c}$
+\end_inset
+
+ v řádku resp.
+ v sloupci gridu je roven
+\begin_inset Formula 
+\[
+n_{r}=n_{c}=n_{b}^{1/k}=n_{b}^{1/3}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph*
+Velikost buňky.
+\end_layout
+
+\begin_layout Standard
+Velikost buňky gridu určíme ze vztahu
+\begin_inset Formula 
+\[
+b_{x}=\frac{\overline{x}-\underline{x}}{n_{r}},\qquad b_{y}=\frac{\overline{y}-\underline{y}}{n_{r}},\qquad b_{z}=\frac{\overline{z}-\underline{z}}{n_{r}},
+\]
+
+\end_inset
+
+kde
+\begin_inset Formula 
+\[
+\underline{x}=\min_{1\leq i\leq n}\{x_{i}\},\qquad\overline{x}=\max_{1\leq i\leq n}\{x_{i}\},\qquad\underline{y}=\min_{1\leq i\leq n}\{y_{i}\},\qquad\overline{y}=\max_{1\leq i\leq n}\{y_{i}\},\qquad\underline{z}=\min_{1\leq i\leq n}\{z_{i}\},\qquad\overline{z}=\max_{1\leq i\leq n}\{z_{i}\}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph*
+Normalizace souřadnic.
+\end_layout
+
+\begin_layout Standard
+Normalizované (redukované) souřadnice bodu 
+\begin_inset Formula $p_{i}=[x_{i}^{\prime},y_{i}^{\prime},z_{i}^{\prime}]$
+\end_inset
+
+ mají tvar
+\begin_inset Formula 
+\[
+x_{i}^{\prime}=\frac{x_{i}-\underline{x}}{\overline{x}-\underline{x}},\qquad y_{i}^{\prime}=\frac{y_{i}-\underline{y}}{\overline{y}-\underline{y}},\qquad z_{i}^{\prime}=\frac{z_{i}-\underline{z}}{\overline{z}-\underline{z}},
+\]
+
+\end_inset
+
+kde 
+\begin_inset Formula $0\leq x_{i}^{\prime}\leq1$
+\end_inset
+
+,
+ 
+\begin_inset Formula $0\leq y_{i}^{\prime}\leq1$
+\end_inset
+
+,
+ 
+\begin_inset Formula $0\leq z_{i}^{\prime}\leq1$
+\end_inset
+
+.
+ Následně budou použity k výpočtu hashovací funkce.
+\begin_inset Float figure
+placement h
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename grid3d2.eps
+	scale 30
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Ukázka 3D indexačního gridu,
+ znázorněny 3D a 1D indexy.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Paragraph*
+Výpočet indexů bodu.
+\end_layout
+
+\begin_layout Standard
+Poloha každé z buněk v gridu je určena trojicí indexů 
+\begin_inset Formula $\left\langle j_{x},j_{y},j_{z}\right\rangle $
+\end_inset
+
+.
+ Bod 
+\begin_inset Formula $p_{i}$
+\end_inset
+
+ leží v buňce gridu s indexy 
+\begin_inset Formula 
+\[
+j_{x}=\left\lfloor cn_{r}x_{i}^{\prime}\right\rfloor ,\qquad j_{y}=\left\lfloor cn_{r}y_{i}^{\prime}\right\rfloor ,\qquad j_{z}=\left\lfloor cn_{r}z_{i}^{\prime}\right\rfloor ,
+\]
+
+\end_inset
+
+kde 
+\begin_inset Formula $c=0.99$
+\end_inset
+
+ je 
+\begin_inset Quotes eld
+\end_inset
+
+zaokrouhlovací
+\begin_inset Quotes erd
+\end_inset
+
+ konstanta,
+ symbol 
+\begin_inset Formula $\left\lfloor \cdot\right\rfloor $
+\end_inset
+
+ představuje zaokrouhlení zdola (např.
+ funkce 
+\family typewriter
+ceil()
+\family default
+ či 
+\family typewriter
+int()
+\family default
+).
+ 
+\end_layout
+
+\begin_layout Paragraph*
+Hashovací funkce.
+\end_layout
+
+\begin_layout Standard
+Pro konverzi 
+\begin_inset Formula $\left\langle j_{x},j_{y},j_{z}\right\rangle $
+\end_inset
+
+ na jednodimenzionální index 
+\begin_inset Formula $j$
+\end_inset
+
+ použijeme jednoduchou hashovací funkci
+\begin_inset Formula 
+\[
+a=h(k),
+\]
+
+\end_inset
+
+kde
+\begin_inset Formula 
+\[
+h(k)=j_{x}+j_{y}n_{r}+j_{z}n_{r}^{2},\qquad a\equiv j,\qquad k\equiv p,
+\]
+
+\end_inset
+
+
+\begin_inset Formula $h(k)$
+\end_inset
+
+ je kvadratickou funkcí 
+\begin_inset Formula $n_{r}.$
+\end_inset
+
+ Číslování buněk probíhá po řádcích v jednotlivých vrstvách,
+ každá z buněk má unikátní hash reprezentovaný indexem 
+\begin_inset Formula $j$
+\end_inset
+
+,
+ kde 
+\begin_inset Formula $0\leq j\leq n_{b}-1$
+\end_inset
+
+,
+ viz Obr.
+ 1.
+ Protože prostor klíčů je 
+\begin_inset Quotes eld
+\end_inset
+
+větší
+\begin_inset Quotes erd
+\end_inset
+
+ než prostor adres,
+ dochází ke kolizím hashovací funkce,
+ kdy uvnitř jedné buňky může být více bodů.
+ Každá z 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\nospellcheck off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $n_{b}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\nospellcheck default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ buněk gridu bude obsahovat průměrně
+\begin_inset Formula 
+\[
+m=\frac{n}{n_{b}}=n^{2/3},
+\]
+
+\end_inset
+
+bodů 
+\begin_inset Formula $p_{i}$
+\end_inset
+
+ množiny 
+\begin_inset Formula $P$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Paragraph*
+Datové struktury.
+\end_layout
+
+\begin_layout Standard
+Pro vlastní indexaci budou vytvořeny dvě pomocné datové struktury.
+ První představuje 
+\emph on
+hashovací
+\emph default
+ tabulku,
+ která pro každou buňku ukládá indexy 
+\begin_inset Formula $j_{i}$
+\end_inset
+
+ všech bodů,
+ které jsou v ní obsaženy.
+ Pro reprezentaci v programovacím jazyce Python bude použit defaultdict
+\end_layout
+
+\begin_layout LyX-Code
+H = defaultdict()
+\end_layout
+
+\begin_layout LyX-Code
+H[key].append(value)
+\end_layout
+
+\begin_layout Standard
+který umožňuje sdružovat prvky se stejnými klíči.
+ Vytváří tak strukturu,
+ která je analogií 
+\end_layout
+
+\begin_layout LyX-Code
+ H= {j1 :
+ [i11,
+ i12,
+ ...,
+ i1k1],
+ j2 :
+ [i21,
+ i22,
+ ...,
+ i2k2],
+ ....,
+ 
+\end_layout
+
+\begin_layout LyX-Code
+      jnb :[inb1,
+ inb2,
+ ...,
+ inbk]},
+\end_layout
+
+\begin_layout Standard
+Druhou strukturu bude tvořit 1D pole s 
+\begin_inset Formula $n$
+\end_inset
+
+ položkami,
+ které každému bodu 
+\begin_inset Formula $p_{i}$
+\end_inset
+
+ přiřadí jednodimenzionální index 
+\begin_inset Formula $j_{i}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
+J = [j1,
+ j2,
+ ...,
+ jn].
+\end_layout
+
+\begin_layout Standard
+Dojde tak k obousměrnému prolinkování a budeme vědět,
+ které body 
+\begin_inset Formula $p_{i}$
+\end_inset
+
+ se nachází v konkrétní buňce voxelového gridu,
+ a ve které buňce gridu se nachází konkrétní bod 
+\begin_inset Formula $p_{i}$
+\end_inset
+
+,
+ viz Obr.
+ 2.
+ 
+\begin_inset Float figure
+placement t
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename hash_1D.eps
+	scale 75
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Ukázka prostorové indexace bodů množiny 
+\begin_inset Formula $P$
+\end_inset
+
+,
+ hashovací tabulka 
+\begin_inset Formula $H$
+\end_inset
+
+ a 1D pole 
+\begin_inset Formula $J$
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph*
+Aplikace hashovací funkce.
+\end_layout
+
+\begin_layout Standard
+Pro libovolný 
+\begin_inset Quotes eld
+\end_inset
+
+query point
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset Formula $q=[x,y,z]$
+\end_inset
+
+ postupujeme následujícím způsobem.
+ S využitím hashovací funkce spočteme 1D adresu buňky 
+\begin_inset Formula $j$
+\end_inset
+
+,
+ která tento bod obsahuje.
+ Dotazem do hashovací struktury 
+\end_layout
+
+\begin_layout LyX-Code
+Q = H[j],
+\end_layout
+
+\begin_layout Standard
+získáme podmnožinu s průměrnou velikostí 
+\begin_inset Formula $m$
+\end_inset
+
+ bodů,
+ která je v buňce obsažena.
+ Tyto body můžeme použít např.
+ k rychlému nalezení nejbližšího souseda.
+ 
+\end_layout
+
+\begin_layout Paragraph
+NN vs.
+ ANN search.
+\end_layout
+
+\begin_layout Standard
+Pro každý query point 
+\begin_inset Formula $q$
+\end_inset
+
+ hledáme nejbližší bod v celé množině 
+\begin_inset Formula $P$
+\end_inset
+
+ (Nearest Neighbor Search).
+ Akcelerovaná metoda provádí hledání pouze uvnitř buňky gridu,
+ do které query point 
+\begin_inset Formula $q$
+\end_inset
+
+ spadá.
+ Může tak docházet k situaci (velmi zřídka),
+ kdy nejbližší bod bude ležet mimo buňku.
+ Hovoříme pak o přibližné metodě,
+ tzv.
+ Approximate Nearest Neighbor Search (ANN),
+ která je v geoinformatice používána nejčastěji.
+\end_layout
+
+\begin_layout Paragraph
+Zhodnocení efektivity.
+\end_layout
+
+\begin_layout Standard
+V každé z 
+\begin_inset Formula $n_{b}$
+\end_inset
+
+ buněk gridu se nachází průměrně 
+\begin_inset Formula $m=n^{2/3}$
+\end_inset
+
+ bodů původní množiny,
+ které při hledání nejbližšího souseda musíme prohledat.
+ Tento krok musíme zopakovat postupně pro všechny buňky gridu,
+ budeme tedy provádět 
+\begin_inset Formula $O(m\cdot n_{b})=O(n)$
+\end_inset
+
+ operací.
+ Bez prostorové indexace budeme každému z 
+\begin_inset Formula $n$
+\end_inset
+
+ bodů prohledávat jeho 
+\begin_inset Formula $n$
+\end_inset
+
+ sousedů,
+ celkově tedy budeme provádět 
+\begin_inset Formula $O(n\cdot n)=O(n^{2})$
+\end_inset
+
+ operací.
+ Zatímco původní metoda má kvadratickou složitost,
+ akcelerovaná metoda má pouze lineární složitost.
+ 
+\end_layout
+
+\end_body
+\end_document

@@ -27,10 +27,12 @@ def naive_search (X, Y, Z, x, y, z, k):
     for i in range(len(X)): 
         px, py, pz = X[i], Y[i], Z[i]
         compute_distance = euclid_distance(px, py, pz, x, y, z)
+        if compute_distance ==0:
+            continue
         distances.append((compute_distance, i)) #append distance and point index 
         
     distances.sort() 
-    distances = distances[1:]  #first distance is distance to myself which is zero
+    #first distance is distance to myself which is zero
     
     Xn, Yn, Zn = [], [], []  
     
@@ -53,10 +55,11 @@ def compute_density(X, Y, Z, knn_method):
     
     #calculate average distance
     daver = sum(distances)/len(distances)  
-    
+
     rho = 1/daver**3
 
     return rho
+
 
 class Node:
     def __init__(self, point, left=None, right=None):
@@ -140,11 +143,10 @@ def kd_tree_knn_search(node, target, k, knn_list, depth=0):
 def kd_tree_search_wrapper(X, Y, Z, x, y, z, k=30):
     target = (x, y, z)
     knn_list = []
-
     kd_tree_knn_search(kdtree_root, target, k, knn_list)
-
+    
     Xn, Yn, Zn = [], [], []
-    for dist, p in knn_list:
+    for _, p in knn_list:
         Xn.append(p[0])
         Yn.append(p[1])
         Zn.append(p[2])
@@ -158,14 +160,15 @@ X, Y, Z = loadPoints('test5000.txt')
 print(len(X))
 
 kdtree_root = build_kdtree(list(zip(X, Y, Z)))
-tset =kd_tree_search_wrapper(X, Y, Z, X[0], Y[0], Z[0], k=5)
-#print(tset)
+
+tset =kd_tree_search_wrapper(X, Y, Z, X[0], Y[0], Z[0], k=7)
+print(tset)
 
 dens = compute_density(X, Y, Z, kd_tree_search_wrapper)
 print(dens)
 
-naivenn = naive_search(X, Y, Z, X[0], Y[0], Z[0], k=5)
-#print(naivenn)
+naivenn = naive_search(X, Y, Z, X[0], Y[0], Z[0], k=7)
+print(naivenn)
 
 densnaive = compute_density(X, Y, Z, naive_search)
 print(densnaive)

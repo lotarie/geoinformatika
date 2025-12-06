@@ -1,4 +1,11 @@
 from math import *
+from time import *
+from matplotlib.pyplot import *
+from numpy import * 
+from collections import defaultdict
+from sklearn.neighbors import KDTree
+import datetime
+from numpy.linalg import *
 
 def loadPoints(file):
     #Load file
@@ -32,7 +39,7 @@ def naive_search (X, Y, Z, x, y, z, k):
         distances.append((compute_distance, i)) #append distance and point index 
         
     distances.sort() 
-    #first distance is distance to myself which is zero
+    
     
     Xn, Yn, Zn = [], [], []  
     
@@ -59,6 +66,32 @@ def compute_density(X, Y, Z, knn_method):
     rho = 1/daver**3
 
     return rho
+
+
+def curvature(X, Y, Z, knn_method):
+    kappa = []
+    #compute curvature for each point
+    for i in range(len(X)):
+        #get k nearest neighbours
+        xn, yn, zn = knn_method(X, Y, Z, X[i], Y[i], Z[i], k=30) 
+        
+        #compute covariance matrix
+        points = array(list(zip(xn, yn, zn)))
+        centroid = points.mean(axis=0)
+        centered_points = points - centroid  
+        cov_matrix = centered_points.T @ centered_points / len(points)
+        
+        #compute eigenvalues
+        eigenvalues, _ = eig(cov_matrix)
+        eigenvalues = sorted(eigenvalues)
+        
+        #compute curvature - kappa = lambda1 / (lambda1 + lambda2 + lambda3)
+        if sum(eigenvalues) == 0:
+            kappa.append(0)
+        else:
+            kappa.append(eigenvalues[0] / sum(eigenvalues))
+            
+    return kappa
 
 
 class Node:
@@ -140,7 +173,7 @@ def kd_tree_knn_search(node, target, k, knn_list, depth=0):
 
 
 #wrapper function for KD-Tree k-NN search
-def kd_tree_search_wrapper(X, Y, Z, x, y, z, k=30):
+def kd_tree_search_wrapper(X, Y, Z, x, y, z, k):
     target = (x, y, z)
     knn_list = []
     kd_tree_knn_search(kdtree_root, target, k, knn_list)
@@ -154,24 +187,45 @@ def kd_tree_search_wrapper(X, Y, Z, x, y, z, k=30):
     return Xn, Yn, Zn
 
 #X, Y, Z = loadPoints ('minitest.txt')
-#X, Y, Z = loadPoints('tree_18.txt')
+X, Y, Z = loadPoints('tree_18.txt')
 #X, Y, Z = loadPoints ('test1000.txt')
-X, Y, Z = loadPoints('test5000.txt')
+#X, Y, Z = loadPoints('test5000.txt')
+
 print(len(X))
 
 kdtree_root = build_kdtree(list(zip(X, Y, Z)))
 
-tset =kd_tree_search_wrapper(X, Y, Z, X[0], Y[0], Z[0], k=7)
+tset =kd_tree_search_wrapper(X, Y, Z, X[0], Y[0], Z[0], k=5)
 print(tset)
 
-dens = compute_density(X, Y, Z, kd_tree_search_wrapper)
-print(dens)
+#dens = compute_density(X, Y, Z, kd_tree_search_wrapper)
+#print(dens)
 
-naivenn = naive_search(X, Y, Z, X[0], Y[0], Z[0], k=7)
-print(naivenn)
+#naivenn = naive_search(X, Y, Z, X[0], Y[0], Z[0], k=5)
+#print(naivenn)
 
-densnaive = compute_density(X, Y, Z, naive_search)
-print(densnaive)
+
+curvatur = curvature(X, Y, Z, kd_tree_search_wrapper)
+print(curvatur)
+
+import numpy as np
+
+# Příklad NumPy pole
+results = np.array(curvatur)
+
+# Název souboru, do kterého chceme data uložit
+file_name = 'curvature_kdtree.txt'
+
+# Uložení pole do textového souboru
+np.savetxt(
+    file_name, 
+    results, 
+)
+
+print(f"NumPy pole bylo úspěšně uloženo do souboru: {file_name}")
+
+#densnaive = compute_density(X, Y, Z, naive_search)
+#print(densnaive)
 
 
 

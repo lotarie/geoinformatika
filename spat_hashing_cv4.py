@@ -6,6 +6,7 @@ from collections import defaultdict
 from sklearn.neighbors import KDTree
 import datetime
 from numpy.linalg import *
+import time
 
 
 
@@ -210,87 +211,3 @@ print(nn_naive)
 dens = compute_density(X, Y, Z, naive_search) #takes about 15 mins
 print(dens)
 
-
-
-class Node:
-    def __init__(self, point, left=None, right=None):
-        self.point = point
-        self.left = left
-        self.right = right
-        
-def build_kdtree(points, depth=0):
-
-    if not points:
-        return None
-    
-    kd = 3  #3D points
-    axis = depth % kd
-    
-    points.sort(key=lambda point: point[axis])
-    median = len(points) // 2
-    
-    return Node(
-        point=points[median],
-        left=build_kdtree(points[:median], depth + 1),
-        right=build_kdtree(points[median + 1:], depth + 1)
-    )
-
-def kd_tree_nn_search(node, q_point, depth=0, best=None):
-    if node is None: 
-        return best
-    
-    kd = 3
-    axis = depth % kd
-    
-    next_best = None
-    next_branch = None
-    opposite_branch = None
-    
-    point = q_point
-    px, py, pz = point[0], point[1], point[2]
-    
-    dist = euclid_distance(px, py, pz, node.point[0], node.point[1], node.point[2])
-    
-    if best is None and dist > 0:
-        next_best = (node.point, dist)
-    else:
-        next_best = best
-    
-    if point[axis] < node.point[axis]:
-        next_branch = node.left
-        opposite_branch = node.right
-    else:
-        next_branch = node.right
-        opposite_branch = node.left
-    
-    next_best = kd_tree_nn_search(next_branch, point, depth + 1, next_best)
-    
-    if (point[axis] - node.point[axis]) ** 2 < next_best[1]:
-        next_best = kd_tree_nn_search(opposite_branch, point, depth + 1, next_best)
-    
-    return next_best
-
-
-def compute_density_kdtree(X, Y, Z, kdtree_root):
-    distances = []
-
-    for i in range(len(X)):
-        query_point = (X[i], Y[i], Z[i])
-        
-        d, nn_point = kd_tree_nn_search(kdtree_root, query_point) 
-        distances.append(d)
-    
-    #calculate average distance
-    daver = sum(distances)/len(distances) 
-    
-    rho = 1/daver**3
-
-    return rho
-
-kdtree_root = build_kdtree(list(zip(X, Y, Z)))
-
-nn_kdtree = kd_tree_nn_search(kdtree_root, (X[3], Y[3], Z[3]))
-print(nn_kdtree)
-
-dens_kdtree = compute_density_kdtree(X, Y, Z, kdtree_root)
-print(dens_kdtree)

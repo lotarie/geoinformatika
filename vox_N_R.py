@@ -4,6 +4,7 @@ from matplotlib.pyplot import *
 from numpy import * 
 from collections import defaultdict
 from sklearn.neighbors import KDTree
+import datetime
 from numpy.linalg import *
 
 
@@ -61,7 +62,7 @@ def drawVoxels(x_min, y_min, z_min, dx, dy, dz, V): #V = 3Dnumpyarray
     
     show()
  
-def init_Spat_Index(X,Y,Z, n_xyz):
+def init_Spat_Index(X,Y,Z, n_r):
     x_min=min(X)
     x_max=max(X)
     y_min=min(Y)
@@ -75,15 +76,15 @@ def init_Spat_Index(X,Y,Z, n_xyz):
     dz = (z_max-z_min)
     
     #size of grid cell
-    bx = dx/n_xyz
-    by = dy/n_xyz
-    bz = dz/n_xyz
+    bx = dx/n_r
+    by = dy/n_r
+    bz = dz/n_r
     
     return x_min, y_min, z_min, dx, dy, dz, bx, by, bz
 
 
 #compute spatial index
-def get_3D_index (x, y, z, dx,dy,dz,x_min,y_min,z_min, n_xyz):
+def get_3D_index (x, y, z, dx,dy,dz,x_min,y_min,z_min, n_r):
     c=0.99999
     #reduce coordinates
     xr = ((x-x_min)/dx)   
@@ -92,23 +93,23 @@ def get_3D_index (x, y, z, dx,dy,dz,x_min,y_min,z_min, n_xyz):
     
     #compute spatial indices 
     
-    jx = int(xr * c * n_xyz)
-    jy = int(yr * c * n_xyz)
-    jz = int(zr * c * n_xyz)
+    jx = int(xr * c * n_r)
+    jy = int(yr * c * n_r)
+    jz = int(zr * c * n_r)
     
     return jx, jy, jz
  
-def get_1D_index(jx, jy, jz, n_xyz):  
+def get_1D_index(jx, jy, jz, n_r):  
       
-    return jx + jy * n_xyz + jz * n_xyz**2
+    return jx + jy * n_r + jz * n_r**2
 
-def create3Dindex(X,Y,Z, x_min, y_min, z_min, dx, dy, dz, bx, by, bz, n_xyz):
+def create3Dindex(X,Y,Z, x_min, y_min, z_min, dx, dy, dz, bx, by, bz, n_r):
     H = defaultdict(list)   #for 1 key multiple values
-    J = [0] * len(X)
+    J = [0] * len(X) 
     
     for i in range(len(X)): 
-        jx, jy, jz = get_3D_index (X[i], Y[i], Z[i], dx, dy, dz, x_min, y_min, z_min, n_xyz)
-        idx = get_1D_index (jx, jy, jz, n_xyz)
+        jx, jy, jz = get_3D_index (X[i], Y[i], Z[i], dx, dy, dz, x_min, y_min, z_min, n_r)
+        idx = get_1D_index (jx, jy, jz, n_r)
         H[idx].append(i)  #store point index i for each voxel index
         J[i] = idx
         
@@ -141,8 +142,8 @@ def compute_density(X, Y, Z, knn_method):
 
 
 #X, Y, Z = loadPoints ('minitest.txt')
-#X, Y, Z = loadPoints('tree_18.txt')
-X, Y, Z = loadPoints ('test1000.txt')
+X, Y, Z = loadPoints('tree_18.txt')
+#X, Y, Z = loadPoints ('test1000.txt')
 #X, Y, Z = loadPoints('test5000.txt')
 #X, Y, Z = loadPoints('test550.txt')
 #X, Y, Z = loadPoints('test_half.txt')
@@ -153,30 +154,29 @@ n=len(X)
 #compute number of bins along one axis
 n_bins = int(n**(1/3))
 
-n_xyz = int(n_bins**(1/3))
 
-n_r = n_xyz
+
+#number of voxels per row/column
+n_r = 1
 
 #initialize spatial index
-x_min, y_min, z_min, dx, dy, dz, bx, by, bz = init_Spat_Index(X,Y,Z, n_xyz)
+x_min, y_min, z_min, dx, dy, dz, bx, by, bz = init_Spat_Index(X,Y,Z, n_r)
 
 #compute 3D spatial index   
-jx, jy, jz = get_3D_index ((( dx+x_min+x_min)/2), ((dy+y_min+y_min)/2), ((dz+z_min+z_min)/2), dx,dy,dz,x_min,y_min,z_min, n_xyz)
+jx, jy, jz = get_3D_index ((( dx+x_min+x_min)/2), ((dy+y_min+y_min)/2), ((dz+z_min+z_min)/2), dx,dy,dz,x_min,y_min,z_min, n_r)
 
 #compute 1D index
-index = get_1D_index(jx, jy, jz, n_xyz)
+index = get_1D_index(jx, jy, jz, n_r)
 
 #create 3D spatial index
-H, J = create3Dindex(X,Y,Z, x_min, y_min, z_min, dx, dy, dz, bx, by, bz, n_xyz)
+H, J = create3Dindex(X,Y,Z, x_min, y_min, z_min, dx, dy, dz, bx, by, bz, n_r)
+print(J)
 
 
-def knn_search_voxel(X, Y, Z, x, y, z, k, H, dx, dy, dz, x_min, y_min, z_min, n_xyz):
+def knn_search_voxel(X, Y, Z, x, y, z, k):
     distances = []
     
-    jx, jy, jz = get_3D_index (x, y, z, dx, dy, dz, x_min, y_min, z_min, n_xyz)
-    idx = get_1D_index(jx, jy, jz, n_xyz)
-    
-    points_in_voxel = H[idx]
+    points_in_voxel = H[index]
     
     for i in points_in_voxel: 
         px, py, pz = X[i], Y[i], Z[i]
@@ -197,9 +197,6 @@ def knn_search_voxel(X, Y, Z, x, y, z, k, H, dx, dy, dz, x_min, y_min, z_min, n_
     
     return Xn, Yn, Zn
 
-def knn_search_voxel_wrapper(X, Y, Z, x, y, z, k):
-    
-    return knn_search_voxel(X, Y, Z, x, y, z, k, H, dx, dy, dz, x_min, y_min, z_min, n_xyz)
 
 def curvature(X, Y, Z, knn_method):
     kappa = []
@@ -226,11 +223,8 @@ def curvature(X, Y, Z, knn_method):
             
     return kappa
 
-#start_time = time.perf_counter()
+start_time = time.perf_counter()
 
-
-
-    
 def compute_density(X, Y, Z, knn_method):
     distances = []
 
@@ -238,7 +232,6 @@ def compute_density(X, Y, Z, knn_method):
         #calculate nearest neighbour and its distance
         xn, yn, zn = knn_method(X, Y, Z, X[i], Y[i], Z[i], k=1) 
         d = euclid_distance(X[i], Y[i], Z[i], xn[0], yn[0], zn[0])
-       
         distances.append(d)
     
     #calculate average distance
@@ -254,24 +247,21 @@ def compute_density(X, Y, Z, knn_method):
 V = zeros((n_r, n_r, n_r), dtype=bool)
 
 for i in range(len(X)):
-    jx, jy, jz = get_3D_index (X[i], Y[i], Z[i], dx,dy,dz,x_min,y_min,z_min, n_xyz)
+    jx, jy, jz = get_3D_index (X[i], Y[i], Z[i], dx,dy,dz,x_min,y_min,z_min, n_r)
     V[jx, jy, jz] = True
 
-voxel = drawVoxels(x_min, y_min, z_min, dx, dy, dz, V)
+#voxel = drawVoxels(x_min, y_min, z_min, dx, dy, dz, V)
 
-#knn = knn_search_voxel(X, Y, Z, X[0], Y[0], Z[0], k=5)
+#knn = knn_search_voxel(X, Y, Z, X[0], Y[0], Z[0], k=2)
 #print(knn)
 
-curvature_vxl = curvature(X, Y, Z, knn_search_voxel_wrapper)
-print(curvature_vxl)
+#curvatu = curvature(X, Y, Z, knn_search_voxel)
+#print(curvature)
 
-den = compute_density(X, Y, Z, knn_search_voxel_wrapper)
-print(den)
+#den = compute_density(X, Y, Z, knn_search_voxel)
+#print(den)
 
-#end_time = time.perf_counter()
+end_time = time.perf_counter()
 
-#elapsed_time = end_time - start_time
-#print(elapsed_time)
-
-
-
+elapsed_time = end_time - start_time
+print(elapsed_time)

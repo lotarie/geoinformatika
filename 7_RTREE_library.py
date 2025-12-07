@@ -2,6 +2,7 @@ from rtree import index
 from math import *
 
 
+
 def loadPoints(file):
     #Load file
     X, Y, Z = [], [], [] 

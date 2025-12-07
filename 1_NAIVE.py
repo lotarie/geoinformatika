@@ -69,19 +69,22 @@ def compute_density(X, Y, Z, knn_method):
 
     return rho
 
-
+#test point clouds
 #X, Y, Z = loadPoints ('minitest.txt')
-#X, Y, Z = loadPoints('tree_18.txt')
+X, Y, Z = loadPoints('tree_18.txt')
 #X, Y, Z = loadPoints ('test1000.txt')
 #X, Y, Z = loadPoints('test5000.txt')
 #X, Y, Z = loadPoints('test550.txt')
 #X, Y, Z = loadPoints('test_half.txt')
-X, Y, Z  = loadPoints('test18000.txt')
+#X, Y, Z  = loadPoints('test18000.txt')
 
 
-
+#compute density
 densnaive = compute_density(X, Y, Z, naive_search)
 print(densnaive)
+
+
+
 
 end_time = time.perf_counter()
 

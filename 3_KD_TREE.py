@@ -28,28 +28,7 @@ def euclid_distance(x1, y1, z1, x2, y2, z2): #points are lists
    
     return sqrt((x1 - x2)**2 + (y1 - y2)**2 + (z1 - z2)**2)
 
-def naive_search (X, Y, Z, x, y, z, k):
-    distances = []
-    
-    for i in range(len(X)): 
-        px, py, pz = X[i], Y[i], Z[i]
-        compute_distance = euclid_distance(px, py, pz, x, y, z)
-        if compute_distance ==0:
-            continue
-        distances.append((compute_distance, i)) #append distance and point index 
-        
-    distances.sort() 
-    
-    
-    Xn, Yn, Zn = [], [], []  
-    
-    for _, i in distances[:k]:
-        Xn.append(X[i])  #add point to the list 
-        Yn.append(Y[i])
-        Zn.append(Z[i])
-    
-    return Xn, Yn, Zn
-
+start_time = time.perf_counter()
 
 def compute_density(X, Y, Z, knn_method):
     distances = []
@@ -120,6 +99,7 @@ def build_kdtree(points, depth=0):
         right=build_kdtree(points[median + 1:], depth + 1)
     )
 
+
  #function to add a point to the knn list
 def knn_list_add(knn_list, point, dist, k):
     if dist == 0:
@@ -142,7 +122,7 @@ def knn_list_add(knn_list, point, dist, k):
     knn_list.sort()
 
 
-# KD-Tree k-NN search
+#kdtree knn search
 def kd_tree_knn_search(node, target, k, knn_list, depth=0):
     if node is None:
         return
@@ -172,7 +152,7 @@ def kd_tree_knn_search(node, target, k, knn_list, depth=0):
         kd_tree_knn_search(far, target, k, knn_list, depth + 1)
 
 
-#wrapper function for KD-Tree k-NN search
+#wrapper function for kdtree knn search
 def kd_tree_search_wrapper(X, Y, Z, x, y, z, k):
     target = (x, y, z)
     knn_list = []
@@ -186,46 +166,37 @@ def kd_tree_search_wrapper(X, Y, Z, x, y, z, k):
 
     return Xn, Yn, Zn
 
+#test point clouds
 #X, Y, Z = loadPoints ('minitest.txt')
 X, Y, Z = loadPoints('tree_18.txt')
 #X, Y, Z = loadPoints ('test1000.txt')
 #X, Y, Z = loadPoints('test5000.txt')
-
-print(len(X))
+#X, Y, Z = loadPoints('test550.txt')
+#X, Y, Z = loadPoints('test_half.txt')
+#X, Y, Z  = loadPoints('test18000.txt')
 
 kdtree_root = build_kdtree(list(zip(X, Y, Z)))
 
-tset =kd_tree_search_wrapper(X, Y, Z, X[0], Y[0], Z[0], k=5)
-print(tset)
+#find k nearest neighbors
+#kdtree_nntest =kd_tree_search_wrapper(X, Y, Z, X[0], Y[0], Z[0], k=5)
+#print(kdtree_nntest)
 
-#dens = compute_density(X, Y, Z, kd_tree_search_wrapper)
-#print(dens)
-
-#naivenn = naive_search(X, Y, Z, X[0], Y[0], Z[0], k=5)
-#print(naivenn)
+#compute density
+dens = compute_density(X, Y, Z, kd_tree_search_wrapper)
+print(dens)
 
 
-curvatur = curvature(X, Y, Z, kd_tree_search_wrapper)
-print(curvatur)
+#compute curvature and save to file
+''''
+curvature_kdtree = curvature(X, Y, Z, kd_tree_search_wrapper)
+print(curvature_kdtree )
 
-import numpy as np
 
-# Příklad NumPy pole
-results = np.array(curvatur)
-
-# Název souboru, do kterého chceme data uložit
+results = np.array(curvature_kdtree )
 file_name = 'curvature_kdtree.txt'
+np.savetxt(file_name, results)
+'''
+end_time = time.perf_counter()
 
-# Uložení pole do textového souboru
-np.savetxt(
-    file_name, 
-    results, 
-)
-
-print(f"NumPy pole bylo úspěšně uloženo do souboru: {file_name}")
-
-#densnaive = compute_density(X, Y, Z, naive_search)
-#print(densnaive)
-
-
-
+elapsed_time = end_time - start_time
+print(elapsed_time)

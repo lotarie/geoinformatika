@@ -139,14 +139,15 @@ def compute_density(X, Y, Z, knn_method):
 
     return rho
 
-
+#test point clouds
 #X, Y, Z = loadPoints ('minitest.txt')
-#X, Y, Z = loadPoints('tree_18.txt')
-X, Y, Z = loadPoints ('test1000.txt')
+X, Y, Z = loadPoints('tree_18.txt')
+#X, Y, Z = loadPoints ('test1000.txt')
 #X, Y, Z = loadPoints('test5000.txt')
 #X, Y, Z = loadPoints('test550.txt')
 #X, Y, Z = loadPoints('test_half.txt')
 #X, Y, Z  = loadPoints('test18000.txt')
+
 
 #amount of points
 n=len(X) 
@@ -155,7 +156,9 @@ n_bins = int(n**(1/3))
 
 n_xyz = int(n_bins**(1/3))
 
-n_r = n_xyz
+
+#n_r = n_xyz  #number of voxels along one axis
+n_r = 5  #number of voxels for plotting
 
 #initialize spatial index
 x_min, y_min, z_min, dx, dy, dz, bx, by, bz = init_Spat_Index(X,Y,Z, n_xyz)
@@ -226,8 +229,7 @@ def curvature(X, Y, Z, knn_method):
             
     return kappa
 
-#start_time = time.perf_counter()
-
+start_time = time.perf_counter()
 
 
     
@@ -249,7 +251,10 @@ def compute_density(X, Y, Z, knn_method):
     return rho
 
 
-#body = drawPoints(X,Y,Z, 0.025)
+#points = drawPoints(X,Y,Z, 0.025)
+
+#create voxel array using n_xyz
+'''''
 #Create voxel array
 V = zeros((n_r, n_r, n_r), dtype=bool)
 
@@ -259,19 +264,43 @@ for i in range(len(X)):
 
 voxel = drawVoxels(x_min, y_min, z_min, dx, dy, dz, V)
 
+'''''
+
+
+#create voxel array using manual n_r
+V = zeros((n_r, n_r, n_r), dtype=bool)
+
+for i in range(len(X)):
+    jx, jy, jz = get_3D_index (X[i], Y[i], Z[i], dx,dy,dz,x_min,y_min,z_min, n_r)
+    V[jx, jy, jz] = True
+
+voxel = drawVoxels(x_min, y_min, z_min, dx, dy, dz, V)
+
+
+#find k nearest neighbours using voxelization
 #knn = knn_search_voxel(X, Y, Z, X[0], Y[0], Z[0], k=5)
 #print(knn)
 
-curvature_vxl = curvature(X, Y, Z, knn_search_voxel_wrapper)
-print(curvature_vxl)
 
+#compute curvature
+#curvature_vxl = curvature(X, Y, Z, knn_search_voxel_wrapper)
+#print(curvature_vxl)
+
+#compute density
 den = compute_density(X, Y, Z, knn_search_voxel_wrapper)
 print(den)
 
-#end_time = time.perf_counter()
 
-#elapsed_time = end_time - start_time
-#print(elapsed_time)
+#save curvature to file
+'''''
+results = np.array(curvature_vxl)
+file_name = 'curvature_voxel.txt'
+np.savetxt(file_name, results)
+'''
+end_time = time.perf_counter()
+
+elapsed_time = end_time - start_time
+print(elapsed_time)
 
 
 

@@ -36,6 +36,7 @@ Y_list = [Y]
 Z_list = [Z]
 
 
+#AI helped with visualization part
 #convert curvatures to a NumPy array
 curvatures = np.array([curvatures]) 
 

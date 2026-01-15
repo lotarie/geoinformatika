@@ -44,7 +44,7 @@ k_neighbors = 5
 nearest_ids1 = list(idx.nearest(coordinates=reference_point, num_results=k_neighbors,objects='id')) 
 nearest_ids = [item.id for item in nearest_ids1]
 
-
+#get nearest neighbors with distances
 nn_dist_coord = []
 for rank, neighbor_id in enumerate(nearest_ids):
     neighbor_point = points[neighbor_id]

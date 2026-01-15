@@ -46,7 +46,7 @@ def compute_density(X, Y, Z, knn_method):
 
     return rho
 
-
+#AI helped with understanding curvature calculation, and helped with writting this function
 def curvature(X, Y, Z, knn_method):
     kappa = []
     #compute curvature for each point
@@ -151,7 +151,7 @@ def kd_tree_knn_search(node, target, k, knn_list, depth=0):
     if len(knn_list) < k or abs(target[axis] - node.point[axis]) < knn_list[-1][0]:
         kd_tree_knn_search(far, target, k, knn_list, depth + 1)
 
-
+#AI helped with this wrapper function 
 #wrapper function for kdtree knn search
 def kd_tree_search_wrapper(X, Y, Z, x, y, z, k):
     target = (x, y, z)

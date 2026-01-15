@@ -200,10 +200,13 @@ def knn_search_voxel(X, Y, Z, x, y, z, k, H, dx, dy, dz, x_min, y_min, z_min, n_
     
     return Xn, Yn, Zn
 
+
+#AI was used for this wrapper function 
 def knn_search_voxel_wrapper(X, Y, Z, x, y, z, k):
     
     return knn_search_voxel(X, Y, Z, x, y, z, k, H, dx, dy, dz, x_min, y_min, z_min, n_xyz)
 
+#AI helped with understanding curvature calculation, and helped with writting this function 
 def curvature(X, Y, Z, knn_method):
     kappa = []
     #compute curvature for each point
